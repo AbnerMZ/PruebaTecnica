@@ -22,7 +22,7 @@ namespace PruebaTecnica.Controllers
             return _vehiculoService.GetVehiculos();
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{placa}")]
         public Vehiculo Get(string placa)
         {
             return _vehiculoService.GetVehiculo(placa);
