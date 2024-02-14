@@ -22,9 +22,9 @@ namespace Capa_Negocio.Service
             return db.Vehiculo.ToList();
         }
 
-        public Vehiculo GetVehiculo(int id)
+        public Vehiculo GetVehiculo(string placa)
         {
-            return db.Vehiculo.FirstOrDefault(a => a.ID == id);
+            return db.Vehiculo.FirstOrDefault(a => a.Placa == placa);
         }
 
         public Vehiculo AddVehiculo(Vehiculo Vehiculo)
@@ -40,7 +40,7 @@ namespace Capa_Negocio.Service
             if (Vehiculo != null)
             {
 
-                Vehiculo.Numero_de_Placa = VehiculoActualizado.Numero_de_Placa;
+                Vehiculo.Placa = VehiculoActualizado.Placa;
                 Vehiculo.VIN = VehiculoActualizado.VIN;
                 Vehiculo.Marca = VehiculoActualizado.Marca;
                 Vehiculo.Serie = VehiculoActualizado.Serie;

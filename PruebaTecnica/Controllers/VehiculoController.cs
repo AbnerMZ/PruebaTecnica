@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace PruebaTecnica.Controllers
 {
 
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class VehiculoController: ControllerBase      
     {
@@ -23,9 +23,9 @@ namespace PruebaTecnica.Controllers
         }
 
         [HttpGet("{id}")]
-        public Vehiculo Get(int id)
+        public Vehiculo Get(string placa)
         {
-            return _vehiculoService.GetVehiculo(id);
+            return _vehiculoService.GetVehiculo(placa);
         }
 
         [HttpPost]
@@ -48,7 +48,7 @@ namespace PruebaTecnica.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            _vehiculoService.GetVehiculo(id);
+            _vehiculoService.DeleteVehiculo(id);
             return NoContent();
         }
     }

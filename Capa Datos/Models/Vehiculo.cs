@@ -9,13 +9,13 @@ using System.Xml.Linq;
 
 namespace Capa_Datos.Models
 {
-    [Table("Vehiculo")]
+    [Table("VEHICULO")]
     public class Vehiculo
     {
         public int ID { get; set; }
 
         [Display(Name = "Número de Placa")]
-        public string Numero_de_Placa { get; set; }
+        public string Placa { get; set; }
 
         public string VIN { get; set; }
 
