@@ -17,39 +17,49 @@ namespace PruebaTecnica.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Vehiculo> Get()
+        public ActionResult<IEnumerable<Vehiculo>> Get()
         {
-            return _vehiculoService.GetVehiculos();
+            var result = _vehiculoService.GetVehiculos();
+            if (!result.Success) return StatusCode(500, result.ErrorMessage);
+            return Ok(result.Data);
         }
 
         [HttpGet("{placa}")]
-        public Vehiculo Get(string placa)
+        public ActionResult<Vehiculo> Get(string placa)
         {
-            return _vehiculoService.GetVehiculo(placa);
+            var result = _vehiculoService.GetVehiculo(placa);
+            if (!result.Success) return NotFound(result.ErrorMessage);
+            return Ok(result.Data);
         }
+
 
         [HttpPost]
         public ActionResult<Vehiculo> Post([FromBody] Vehiculo vehiculo)
         {
-           
-            var creado = _vehiculoService.AddVehiculo(vehiculo);     
-
-            return CreatedAtAction(nameof(Get), new { id = creado.ID }, creado);
+            var result = _vehiculoService.AddVehiculo(vehiculo);
+            if (!result.Success) return StatusCode(500, result.ErrorMessage);
+            return CreatedAtAction(nameof(Get), new { placa = result.Data.Placa }, result.Data);
         }
 
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Vehiculo vehiculoActualizado)
         {
-
-            _vehiculoService.UpdateVehiculo(vehiculoActualizado);
+            var result = _vehiculoService.UpdateVehiculo(vehiculoActualizado);
+            if (!result.Success) return NotFound(result.ErrorMessage);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            _vehiculoService.DeleteVehiculo(id);
+            var result = _vehiculoService.DeleteVehiculo(id);
+            if (!result.Success) return NotFound(result.ErrorMessage);
             return NoContent();
         }
+
+
     }
+
+       
+    
 }

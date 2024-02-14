@@ -17,58 +17,113 @@ namespace Capa_Negocio.Service
             this.db = db;
         }
 
-        public List<Vehiculo> GetVehiculos() 
-        { 
-            return db.Vehiculo.ToList();
-        }
-
-        public Vehiculo GetVehiculo(string placa)
+        public ServiceResult<List<Vehiculo>> GetVehiculos()
         {
-            return db.Vehiculo.FirstOrDefault(a => a.Placa == placa);
-        }
-
-        public Vehiculo AddVehiculo(Vehiculo Vehiculo)
-        {
-            db.Add(Vehiculo);
-            db.SaveChanges();
-            return Vehiculo;
-        }
-
-        public void UpdateVehiculo(Vehiculo VehiculoActualizado)
-        {
-            var Vehiculo = db.Vehiculo.FirstOrDefault(p => p.ID == VehiculoActualizado.ID);
-            if (Vehiculo != null)
+            try
             {
+                var vehiculos = db.Vehiculo.ToList();
+                return ServiceResult<List<Vehiculo>>.SuccessResult(vehiculos);
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult<List<Vehiculo>>.FailureResult("Un error ha ocurrido al obtener los vehículos.");
+            }
+        }
 
-                Vehiculo.Placa = VehiculoActualizado.Placa;
-                Vehiculo.VIN = VehiculoActualizado.VIN;
-                Vehiculo.Marca = VehiculoActualizado.Marca;
-                Vehiculo.Serie = VehiculoActualizado.Serie;
-                Vehiculo.Anio = VehiculoActualizado.Anio;
-                Vehiculo.Color = VehiculoActualizado.Color;
-                Vehiculo.Puertas = VehiculoActualizado.Puertas;
+        public ServiceResult<Vehiculo> GetVehiculo(string placa)
+        {
+            try
+            {
+                var vehiculo = db.Vehiculo.FirstOrDefault(a => a.Placa == placa);
+                if (vehiculo == null) return ServiceResult<Vehiculo>.FailureResult("Vehículo no encontrado.");
+                return ServiceResult<Vehiculo>.SuccessResult(vehiculo);
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult<Vehiculo>.FailureResult("Un error ha ocurrido al obtener el vehículo.");
+            }
+        }
+
+
+        public ServiceResult<Vehiculo> AddVehiculo(Vehiculo vehiculo)
+        {
+            // Verificar si ya existe un vehículo con la misma placa
+            var vehiculoExistente = db.Vehiculo.FirstOrDefault(v => v.Placa == vehiculo.Placa);
+            if (vehiculoExistente != null)
+            {
+                return ServiceResult<Vehiculo>.FailureResult("Ya existe un vehículo con la placa proporcionada.");
+            }
+
+            try
+            {
+                db.Add(vehiculo);
+                db.SaveChanges();
+                return ServiceResult<Vehiculo>.SuccessResult(vehiculo);
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult<Vehiculo>.FailureResult("Un error ha ocurrido al agregar el vehículo.");
+            }
+        }
+
+        public ServiceResult<bool> UpdateVehiculo(Vehiculo vehiculoActualizado)
+        {
+            try
+            {
+                var vehiculo = db.Vehiculo.FirstOrDefault(p => p.ID == vehiculoActualizado.ID);
+                if (vehiculo == null)
+                {
+                    return ServiceResult<bool>.FailureResult("No se encontró el vehículo con el ID especificado.");
+                }
+
+                vehiculo.Placa = vehiculoActualizado.Placa;
+                vehiculo.VIN = vehiculoActualizado.VIN;
+                vehiculo.Marca = vehiculoActualizado.Marca;
+                vehiculo.Serie = vehiculoActualizado.Serie;
+                vehiculo.Anio = vehiculoActualizado.Anio;
+                vehiculo.Color = vehiculoActualizado.Color;
+                vehiculo.Puertas = vehiculoActualizado.Puertas;
 
                 db.SaveChanges();
+                return ServiceResult<bool>.SuccessResult(true);
             }
-            else
+            catch (Exception ex)
             {
-                throw new KeyNotFoundException("No se encontró el Vehiculo con el ID especificado.");
+                return ServiceResult<bool>.FailureResult("Un error ha ocurrido al actualizar el vehículo.");
             }
         }
 
-        public void DeleteVehiculo(int id)
+
+        public ServiceResult<bool> DeleteVehiculo(int id)
         {
-            var Vehiculo = db.Vehiculo.FirstOrDefault(p => p.ID == id);
-            if (Vehiculo != null)
+            try
             {
-                db.Vehiculo.Remove(Vehiculo);
+                var vehiculo = db.Vehiculo.FirstOrDefault(p => p.ID == id);
+                if (vehiculo == null)
+                {
+                    return ServiceResult<bool>.FailureResult("No se encontró el vehículo con el ID especificado para eliminar.");
+                }
+
+                db.Vehiculo.Remove(vehiculo);
                 db.SaveChanges();
+                return ServiceResult<bool>.SuccessResult(true);
             }
-            else
+            catch (Exception ex)
             {
-                throw new KeyNotFoundException("No se encontró el Vehiculo con el ID especificado para eliminar.");
+                return ServiceResult<bool>.FailureResult("Un error ha ocurrido al eliminar el vehículo.");
             }
         }
 
     }
+
+    public class ServiceResult<T>
+    {
+        public T Data { get; set; }
+        public string ErrorMessage { get; set; }
+        public bool Success => ErrorMessage == null;
+
+        public static ServiceResult<T> SuccessResult(T data) => new ServiceResult<T> { Data = data };
+        public static ServiceResult<T> FailureResult(string errorMessage) => new ServiceResult<T> { ErrorMessage = errorMessage };
+    }
+
 }

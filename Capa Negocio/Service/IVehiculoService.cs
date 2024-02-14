@@ -9,11 +9,11 @@ namespace Capa_Negocio.Service
 {
     public interface IVehiculoService
     {
-        List<Vehiculo> GetVehiculos();
-        Vehiculo GetVehiculo(string placa);
-        Vehiculo AddVehiculo(Vehiculo vehiculo);
-        void UpdateVehiculo(Vehiculo vehiculo);
-        void DeleteVehiculo(int id);
-
+        ServiceResult<List<Vehiculo>> GetVehiculos();
+        ServiceResult<Vehiculo> GetVehiculo(string placa);
+        ServiceResult<Vehiculo> AddVehiculo(Vehiculo vehiculo);
+        ServiceResult<bool> UpdateVehiculo(Vehiculo vehiculo);
+        ServiceResult<bool> DeleteVehiculo(int id);
     }
+
 }
